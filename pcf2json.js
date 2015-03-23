@@ -1,22 +1,29 @@
 var fs = require('fs');
 var parse = require('babyparse');
 
-var pcf = {};
+var pcf = {
+  sections: []
+};
 var parents = [];
+var section;
 
 var dir = process.argv[2];
 
 fs.readdir(dir, function(err, files) {
   files.forEach(function(filename) {
-    console.log(filename);
-    fs.readFile(dir + "/" + filename, 'utf-8', function(err, f) {
-      console.log(f);
+    //only process CSVs
+    if (filename.split(".")[2] == "csv") {
+      console.log("PROCESSING " + filename + ".......");
+      var f = fs.readFileSync(dir + "/" + filename, 'utf-8');
       var obj = parse.parse(f);
       obj.data.forEach(function(line, lineNum) {
 
         if (lineNum === 0) {
-          pcf.framework = line[1];
-          pcf.items = [];
+          section = {
+            section_num: filename.split(".")[0] + ".0",
+            title: line[1],
+            children: []
+          };
         }
 
         line.forEach(function(data, i) {
@@ -24,22 +31,23 @@ fs.readdir(dir, function(err, files) {
 
             var element = {
               "elementID": line[0],
-              "element": data,
+              "title": data,
               "children": []
             }
 
             parents[i] = element;
 
             if (i == 1) {
-              pcf.items.push(element);
+              section.children.push(element);
             } else {
               parents[i - 1].children.push(element);
             }
-
           }
         });
       });
-      fs.writeFile(filename.split(".")[0]+".json", JSON.stringify(pcf));
-    });
+      pcf.sections.push(section);
+      console.log(section);
+    }
   });
+  fs.writeFile("framework.json", JSON.stringify(pcf));
 });
