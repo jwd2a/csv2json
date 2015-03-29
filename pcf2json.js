@@ -51,7 +51,9 @@ fs.readdir(dir, function(err, files) {
       });
     }
   });
-  fs.writeFile("framework.json", JSON.stringify(pcf));
+  var finalPCF = {};
+  finalPCF.children = pcf;
+  fs.writeFile("framework.json", JSON.stringify(finalPCF));
 });
 
 function calcDepth(title){
