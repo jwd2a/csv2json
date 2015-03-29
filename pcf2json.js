@@ -52,7 +52,7 @@ fs.readdir(dir, function(err, files) {
     }
   });
   var finalPCF = {};
-  finalPCF.children = pcf;
+  finalPCF.children = pcf[0].children;
   fs.writeFile("framework.json", JSON.stringify(finalPCF));
 });
 
