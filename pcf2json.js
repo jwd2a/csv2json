@@ -1,9 +1,7 @@
 var fs = require('fs');
 var parse = require('babyparse');
 
-var pcf = {
-  sections: []
-};
+var pcf = [];
 var parents = [];
 var section;
 
@@ -19,35 +17,55 @@ fs.readdir(dir, function(err, files) {
       obj.data.forEach(function(line, lineNum) {
 
         if (lineNum === 0) {
-          section = {
+          pcf.push({
             section_num: filename.split(".")[0] + ".0",
             title: line[1],
             children: []
-          };
+          });
         }
 
         line.forEach(function(data, i) {
           if (i != 0 && data) {
-
             var element = {
               "elementID": line[0],
-              "title": data,
               "children": []
             }
+
+            var title = data.split(" ");
+
+            element.depth = calcDepth(title[0]);
+
+            title.splice(0,1);
+            title.splice(title.length - 1, 1);
+            element.title = title.join(" ");
 
             parents[i] = element;
 
             if (i == 1) {
-              section.children.push(element);
+              pcf[lineNum].children.push(element);
             } else {
               parents[i - 1].children.push(element);
             }
           }
         });
       });
-      pcf.sections.push(section);
-      console.log(section);
     }
   });
   fs.writeFile("framework.json", JSON.stringify(pcf));
 });
+
+function calcDepth(title){
+
+  if(title.split(".")[1] == 0){
+    return 1;
+  }
+  if(title.split(".").length == 2){
+    return 2;
+  }
+  if(title.split(".").length == 3){
+    return 3;
+  }
+  if(title.split(".").length == 4){
+    return 4;
+  }
+}
