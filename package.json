@@ -1,0 +1,23 @@
+{
+  "name": "pcfparse",
+  "version": "1.0.0",
+  "description": "Parse PCF files into JSON",
+  "main": "pcf2json.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jwd2a/csv2json.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jwd2a/csv2json/issues"
+  },
+  "homepage": "https://github.com/jwd2a/csv2json",
+  "dependencies": {
+    "babyparse": "^0.4.3",
+    "fs": "0.0.2"
+  }
+}
