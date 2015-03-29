@@ -5,6 +5,7 @@ This script takes a .csv representation of the PCF and creates a nested JSON obj
 ##Usage
 
 - Clone this repo or download `pcf2json.js`
+- Run `npm install` to install local dependencies
 - Create an empty directory, and fill it up with .csv files for each section of the PCF. Example: `1.csv`, `2.csv`, etc. (Names don't matter)
 - Run `pcf2json.js` from inside the directory you just created. The script will parse and concatenate all files into a single JSON file in this dir.
 
