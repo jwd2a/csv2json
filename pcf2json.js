@@ -1,73 +1,82 @@
 var fs = require('fs');
-var parse = require('babyparse');
+var Excel = require("exceljs");
+var _ = require("underscore");
 
 var pcf = [];
 var parents = [];
 var section;
+var workbook = new Excel.Workbook();
 
 var dir = process.argv[2];
 
-fs.readdir(dir, function(err, files) {
-  files.forEach(function(filename) {
-    //only process CSVs
-    if (filename.split(".")[2] == "csv") {
-      console.log("PROCESSING " + filename + ".......");
-      var f = fs.readFileSync(dir + "/" + filename, 'utf-8');
-      var obj = parse.parse(f);
-      obj.data.forEach(function(line, lineNum) {
+workbook.xlsx.readFile(process.argv[2])
+  .then(function() {
 
-        if (lineNum === 0) {
+    var defs = [];
+
+    var defSheet = workbook.getWorksheet("Glossary terms");
+    defSheet.eachRow(function(row, rowNum) {
+      if (rowNum != 1) {
+        defs.push({
+          elementID: row.getCell(1).value,
+          definition: row.getCell(4).value
+        });
+      }
+    });
+
+    var sheets = [];
+    //get all the sheets that correspond to a section of the PCF
+    workbook.eachSheet(function(sheet) {
+      if (sheet.name.split(".").length == 2) {
+        sheets.push(sheet);
+      }
+    });
+
+    //for each sheet, parse the lines
+    var section = 0;
+
+    sheets.forEach(function(sheet) {
+      sheet.eachRow(function(row, rowNum) {
+
+        //find definition
+
+        var definition = _.findWhere(defs, {elementID: row.getCell(1).value});
+
+        if (rowNum == 2) {
           pcf.push({
-            section_num: filename.split(".")[0] + ".0",
-            title: line[1],
+            elementID: row.getCell(1).value,
+            section_num: row.getCell(2).value,
+            title: row.getCell(3).value,
+            definition: definition,
             children: []
           });
         }
 
-        line.forEach(function(data, i) {
-          if (i != 0 && data) {
-            var element = {
-              "elementID": line[0],
-              "children": []
-            }
-
-            var title = data.split(" ");
-
-            element.depth = calcDepth(title[0]);
-
-            title.splice(0,1);
-            title.splice(title.length - 1, 1);
-            element.title = title.join(" ");
-
-            parents[i] = element;
-
-            if (i == 1) {
-              pcf[lineNum].children.push(element);
-            } else {
-              parents[i - 1].children.push(element);
-            }
+        if (rowNum > 2) {
+          var element = {
+            elementID: row.getCell(1).value,
+            title: row.getCell(3).value,
+            definition: definition,
+            children: []
           }
-        });
+
+
+          element.depth = calcDepth(row.getCell(2).value);
+
+          parents[element.depth] = element;
+
+          if (element.depth == 2) {
+            pcf[section].children.push(element);
+          } else {
+            parents[element.depth - 1].children.push(element);
+          }
+        }
       });
-    }
+      section++;
+    });
+    fs.writeFile("framework.json", JSON.stringify(pcf));
   });
-  var finalPCF = {};
-  finalPCF.children = pcf[0].children;
-  fs.writeFile("framework.json", JSON.stringify(finalPCF));
-});
 
-function calcDepth(title){
-
-  if(title.split(".")[1] == 0){
-    return 1;
-  }
-  if(title.split(".").length == 2){
-    return 2;
-  }
-  if(title.split(".").length == 3){
-    return 3;
-  }
-  if(title.split(".").length == 4){
-    return 4;
-  }
+function calcDepth(id) {
+  return id.split(".").length;
 }

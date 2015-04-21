@@ -1,6 +1,6 @@
 {
   "name": "pcfparse",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Parse PCF files into JSON",
   "main": "pcf2json.js",
   "scripts": {
@@ -18,6 +18,8 @@
   "homepage": "https://github.com/jwd2a/csv2json",
   "dependencies": {
     "babyparse": "^0.4.3",
-    "fs": "0.0.2"
+    "exceljs": "^0.1.11",
+    "fs": "0.0.2",
+    "underscore": "^1.8.3"
   }
 }
