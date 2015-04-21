@@ -41,6 +41,9 @@ workbook.xlsx.readFile(process.argv[2])
         //find definition
 
         var definition = _.findWhere(defs, {elementID: row.getCell(1).value});
+        if(definition){
+          definition = definition.definition;
+        }
 
         if (rowNum == 2) {
           pcf.push({
