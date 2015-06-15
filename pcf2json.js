@@ -63,7 +63,6 @@ workbook.xlsx.readFile(process.argv[2])
             children: []
           }
 
-
           element.depth = calcDepth(row.getCell(2).value);
 
           parents[element.depth] = element;
