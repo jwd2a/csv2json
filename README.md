@@ -7,7 +7,7 @@ This script takes a .csv representation of the PCF and creates a nested JSON obj
 - Clone this repo or download `pcf2json.js`
 - Run `npm install` to install local dependencies
 - Once installed, run `node ../path/to/pcf2json.js NameOfFile.xlsx`
-- The result will be a file called `framework.json` in the same directory you ran the script, will all your juicy PCF goodness.
+- The result will be a file called `framework.json` in the same directory you ran the script, with all your juicy PCF goodness.
 
 ##Caveats
 
